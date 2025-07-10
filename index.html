@@ -10,9 +10,8 @@
 
 <style>
 :root{
-  --bg:#000; --card:#151515; --border:#333; --txt:#eaeaea; --muted:#8b8b8b;
-  --accent:#2ecc71; --neutra:#5f5f5f; --baja:#9b59b6; --media:#f1c40f;
-  --alta:#e67e22; --urgente:#e74c3c;
+  --bg:#fafafa;   --card:#ffffff; --border:#e0e0e0; --txt:#333; --muted:#666;
+  --accent:#2ecc71;--neutra:#b2bec3;--baja:#9b59b6;--media:#f1c40f;--alta:#e67e22;--urgente:#e74c3c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -21,15 +20,14 @@ body{
 }
 h1{font-size:1.7rem;font-weight:600;margin-bottom:1rem;text-align:center}
 .container{width:100%;max-width:900px}
-/* buscador */
-#searchBox{display:flex;justify-content:center;margin-bottom:1.15rem}
+/*--- buscador ---*/
+#searchBox{display:flex;justify-content:center;margin-bottom:1.1rem}
 #googleInput{
   flex:1;max-width:360px;background:var(--card);color:var(--txt);
-  border:1px solid var(--border);border-radius:999px;
-  padding:.48rem 1rem;font-size:.92rem;
+  border:1px solid var(--border);border-radius:999px;padding:.48rem 1rem;font-size:.92rem;
 }
 #googleInput::placeholder{color:var(--muted)}
-/* calendario */
+/*--- calendario ---*/
 #calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
 .navBtn{background:none;border:none;font-size:1.4rem;color:var(--accent);cursor:pointer;font-weight:600}
 #monthLabel{font-size:1.2rem;font-weight:600}
@@ -38,28 +36,28 @@ th,td{
   width:14.285%;height:95px;vertical-align:top;text-align:left;
   border:1px solid var(--border);background:var(--card);position:relative
 }
-th{background:#111;height:35px;font-size:.8rem;font-weight:600;color:var(--muted)}
+th{background:#f0f0f0;height:35px;font-size:.8rem;font-weight:600;color:var(--muted)}
 td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
 .badge{position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;border-radius:50%;font-size:.65rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center}
 td.today{outline:3px solid var(--accent)}
-/* lista */
+/*--- listas ---*/
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
 .sectionTitle{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem;color:var(--muted)}
 .task{
   display:flex;gap:.65rem;align-items:center;background:var(--card);
   border-left:6px solid var(--neutra);border-radius:8px;
-  padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 2px 4px rgba(0,0,0,.5)
+  padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 1px 3px rgba(0,0,0,.07)
 }
 [data-priority="Baja"]{border-color:var(--baja)}
 [data-priority="Media"]{border-color:var(--media)}
 [data-priority="Alta"]{border-color:var(--alta)}
 [data-priority="Urgente"]{border-color:var(--urgente)}
-.task.completed{opacity:.32;filter:grayscale(1);text-decoration:line-through}
+.task.completed{opacity:.45;text-decoration:line-through}
 .task span{flex:1;font-size:.9rem}
 .task input{width:1.05rem;height:1.05rem;cursor:pointer}
 .empty{opacity:.55;font-style:italic;padding:.5rem 0}
-/* formulario */
-details{margin-top:1.4rem}
+/*--- formulario ---*/
+details{margin-top:1.3rem}
 summary{cursor:pointer;font-weight:600;margin-bottom:.7rem}
 form label{display:block;font-size:.83rem;margin:.35rem 0}
 form input,form select{
@@ -68,12 +66,13 @@ form input,form select{
 }
 form input::placeholder{color:var(--muted)}
 button{border:none;background:var(--accent);color:#fff;font-weight:600;padding:.5rem 1.1rem;border-radius:6px;margin-top:.8rem;cursor:pointer}
-button:hover{opacity:.88}
+button:hover{opacity:.9}
 </style>
 </head>
 <body>
 <h1>Agenda mensual · Mateo</h1>
 
+<!-- buscador Google -->
 <form id="searchBox" action="https://www.google.com/search">
   <input id="googleInput" name="q" type="search" placeholder="Buscar en Google…">
 </form>
@@ -115,121 +114,143 @@ button:hover{opacity:.88}
 </div>
 
 <script>
-/* =======  CONFIG  ======= */
-const DBX = new Dropbox.Dropbox({ accessToken:"TU_TOKEN_AQUÍ" });
+/*----------- Configuración Dropbox -----------*/
+const DBX = new Dropbox.Dropbox({ accessToken:sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY6ayTIoAXQb-tU6fFs2gsYKcz3CEtKT5-GTRf4ngSAJbD71-HH-0vHOCqN98fVDa4NkGs8oNNeyoIWs1nE4klsvznuZrNCt7CXnu7RU_G_0LIYQ7Np8vAb2mMfyTx7GYP9Y });
 const FILE="/tasks.json";
 
+/*----------- Datos -----------*/
 const levels=["Neutra","Baja","Media","Alta","Urgente"];
 const escalate={Neutra:4,Baja:3,Media:2,Alta:1};
-let tasks=[], viewDate=new Date();
+let tasks=[];
+let viewDate=new Date();
 
-const parseYMD=s=>{const[a,b,c]=s.split("-").map(Number);return new Date(a,b-1,c)}
-const same=(a,b)=>a.toDateString()===b.toDateString();
+/*----------- Utilidades -----------*/
+const parseYMD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const sameDate=(a,b)=>a.toDateString()===b.toDateString();
 
-/* ======  ARRANQUE  ====== */
+/*----------- Arranque -----------*/
 (async()=>{
-  tasks=await load();
-  prev.onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);drawCal()};
-  next.onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);drawCal()};
-  addForm.addEventListener("submit",addTask);
+  tasks = await loadFromDropbox();
+  prev.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()-1);drawCal()};
+  next.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()+1);drawCal()};
+  addForm.addEventListener("submit",handleAdd);
   googleInput.focus();
   escalateLate();drawCal();drawList(new Date());
 })();
 
-/* ======  I/O Dropbox  ====== */
-async function load(){
+/*----------- Dropbox I/O -----------*/
+async function loadFromDropbox(){
   try{
-    const r=await DBX.filesDownload({path:FILE});
-    return JSON.parse(await r.result.fileBlob.text());
+    const resp=await DBX.filesDownload({path:FILE});
+    return JSON.parse(await resp.result.fileBlob.text());
   }catch{return [];}
 }
-async function saveAndReload(){
+async function saveToDropbox(){
   await DBX.filesUpload({path:FILE,mode:{".tag":"overwrite"},contents:JSON.stringify(tasks)});
-  tasks=await load(); // recarga para asegurar sincronía
 }
 
-/* ======  CALENDARIO  ====== */
+/*----------- Calendario -----------*/
 function drawCal(){
   monthLabel.textContent=viewDate.toLocaleDateString("es-EC",{month:"long",year:"numeric"});
-  calendar.innerHTML="";
+  const tbl=calendar;tbl.innerHTML="";
   const head=document.createElement("tr");
   ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;head.appendChild(th);});
-  calendar.appendChild(head);
+  tbl.appendChild(head);
 
   const y=viewDate.getFullYear(),m=viewDate.getMonth();
-  const first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate();
+  const first=new Date(y,m,1);
+  const offset=(first.getDay()+6)%7;
+  const daysInMonth=new Date(y,m+1,0).getDate();
   let row=document.createElement("tr");
-  for(let i=0;i<start;i++)row.appendChild(document.createElement("td"));
-  for(let d=1;d<=days;d++){
+  for(let i=0;i<offset;i++)row.appendChild(document.createElement("td"));
+  for(let d=1;d<=daysInMonth;d++){
     const date=new Date(y,m,d);
     const td=document.createElement("td");
-    if(same(date,new Date()))td.classList.add("today");
+    if(sameDate(date,new Date()))td.classList.add("today");
     td.innerHTML=`<span class="dayNum">${d}</span>`;
-    const count=tasks.filter(t=>!t.done && same(parseYMD(t.date),date)).length;
-    if(count){const b=document.createElement("div");b.className="badge";b.textContent=count;td.appendChild(b);}
+    const count=tasks.filter(t=>!t.done && sameDate(parseYMD(t.date),date)).length;
+    if(count){
+      const badge=document.createElement("div");
+      badge.className="badge";badge.textContent=count;td.appendChild(badge);
+    }
     td.onclick=()=>drawList(date);
     row.appendChild(td);
-    if((start+d)%7===0||d===days){
+    if((offset+d)%7===0||d===daysInMonth){
       while(row.children.length<7)row.appendChild(document.createElement("td"));
-      calendar.appendChild(row);row=document.createElement("tr");
+      tbl.appendChild(row);row=document.createElement("tr");
     }
   }
 }
 
-/* ======  LISTA DIARIA  ====== */
+/*----------- Lista diaria -----------*/
 function drawList(date){
   todayHeader.textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-  const listDiv=document.getElementById("tasks");listDiv.innerHTML="";
-  const pend=tasks.filter(t=>!t.done && same(parseYMD(t.date),date));
-  const comp=tasks.filter(t=> t.done && same(parseYMD(t.date),date));
+  const list=document.getElementById("tasks");list.innerHTML="";
+  const pend=tasks.filter(t=>!t.done && sameDate(parseYMD(t.date),date));
+  const comp=tasks.filter(t=>t.done && sameDate(parseYMD(t.date),date));
 
-  if(!pend.length && !comp.length){listDiv.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
+  if(!pend.length && !comp.length){
+    list.innerHTML='<div class="empty">Sin pendientes.</div>';return;
+  }
 
   if(pend.length){
     pend.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
-    pend.forEach(t=>listDiv.append(buildTask(t,date,false)));
+    pend.forEach(t=>list.append( buildTask(t,date,false) ));
   }
   if(comp.length){
-    listDiv.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
+    list.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
     comp.sort((a,b)=>b.id-a.id);
-    comp.forEach(t=>listDiv.append(buildTask(t,date,true)));
+    comp.forEach(t=>list.append( buildTask(t,date,true) ));
   }
 }
-function buildTask(t,focus,isDone){
-  const d=document.createElement("div");d.className="task"+(isDone?" completed":"");d.dataset.priority=t.priority;
-  const c=document.createElement("input");c.type="checkbox";c.checked=isDone;c.onchange=()=>toggle(t.id,focus);
-  const s=document.createElement("span");s.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:""}`;
-  d.append(c,s);return d;
+function buildTask(t,focus,done){
+  const div=document.createElement("div");
+  div.className="task"+(done?" completed":"");div.dataset.priority=t.priority;
+  const chk=document.createElement("input");chk.type="checkbox";chk.checked=done;
+  chk.onchange=()=>toggleDone(t.id,focus);
+  const span=document.createElement("span");
+  span.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:""}`;
+  div.append(chk,span);
+  return div;
 }
 
-/* ======  TOGGLE DONE ====== */
-async function toggle(id,focus){
-  const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;await saveAndReload();drawCal();drawList(focus);}
+/*----------- Toggle Done -----------*/
+async function toggleDone(id,focusDate){
+  const t=tasks.find(x=>x.id===id);
+  if(!t)return;
+  t.done=!t.done;
+  drawCal();drawList(focusDate);   // UI inmediata
+  await saveToDropbox();           // persiste
 }
 
-/* ======  AÑADIR TAREA ====== */
-async function addTask(e){
+/*----------- Añadir tarea -----------*/
+async function handleAdd(e){
   e.preventDefault();
-  const f=taskDate.value.trim(),d=taskDesc.value.trim(),p=taskPriority.value,h=taskTime.value;
-  if(!f||!d)return;
-  tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p,done:false});
-  await saveAndReload();escalateLate();drawCal();drawList(parseYMD(f));
+  const {taskDate,taskDesc,taskPriority,taskTime}=e.target.elements;
+  if(!taskDate.value || !taskDesc.value.trim())return;
+  tasks.push({
+    id:Date.now(),date:taskDate.value,desc:taskDesc.value.trim(),
+    priority:taskPriority.value,time:taskTime.value,done:false
+  });
+  drawCal();drawList(parseYMD(taskDate.value)); // UI inmediata
+  await saveToDropbox();                         // persiste
+  escalateLate();   // corrige retrasadas
   e.target.reset();e.target.parentElement.open=false;
 }
 
-/* ======  ESCALADO ====== */
+/*----------- Escalar retrasadas -----------*/
 function escalateLate(){
-  const today=new Date();
+  const now=new Date();
   tasks.forEach(t=>{
     if(t.done)return;
     const d=parseYMD(t.date);
-    if(d<today){
-      const diff=Math.floor((today-d)/86400000);
-      t.date=today.toISOString().split("T")[0];
-      const r=escalate[t.priority];
-      if(r!==undefined&&diff>=r){
-        const i=levels.indexOf(t.priority);
-        if(i<levels.length-1)t.priority=levels[i+1];
+    if(d<now){
+      const diff=Math.floor((now-d)/86400000);
+      t.date=now.toISOString().split("T")[0];
+      const lim=escalate[t.priority];
+      if(lim!==undefined && diff>=lim){
+        const idx=levels.indexOf(t.priority);
+        if(idx<levels.length-1)t.priority=levels[idx+1];
       }
     }
   });
