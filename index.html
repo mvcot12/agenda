@@ -9,15 +9,15 @@
 <script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
 
 <style>
-/* ---------- PALETA NOCTURNA ---------- */
+/***  PALETA NOCTURNA  ***/
 :root{
-  --bg:#000;              /* fondo principal */
-  --card:#151515;         /* tarjetas */
-  --border:#333;          /* bordes */
-  --txt:#eaeaea;          /* texto principal */
-  --muted:#8b8b8b;        /* texto secundario */
+  --bg:#000;
+  --card:#151515;
+  --border:#333;
+  --txt:#eaeaea;
+  --muted:#8b8b8b;
 
-  --accent:#2ecc71;       /* verde de énfasis */
+  --accent:#2ecc71;
   --neutra:#5f5f5f;
   --baja:#9b59b6;
   --media:#f1c40f;
@@ -31,46 +31,38 @@ body{
   background:var(--bg);color:var(--txt);
   display:flex;flex-direction:column;align-items:center;padding:1.5rem;
 }
-h1{font-size:1.7rem;font-weight:600;margin-bottom:1.2rem;text-align:center}
-
+h1{font-size:1.7rem;font-weight:600;margin-bottom:1rem;text-align:center}
 .container{width:100%;max-width:900px}
 
-/* ---------- BUSCADOR GOOGLE ---------- */
-#searchBox{
-  display:flex;justify-content:center;margin:0 0 1.2rem;
-}
+/***  BUSCADOR GOOGLE  ***/
+#searchBox{display:flex;justify-content:center;margin:0 0 1.2rem}
 #googleInput{
-  flex:1;max-width:350px;
-  background:var(--card);color:var(--txt);
+  flex:1;max-width:350px;background:var(--card);color:var(--txt);
   border:1px solid var(--border);border-radius:999px;
   padding:.45rem 1rem;font-size:.9rem;
 }
 #googleInput::placeholder{color:var(--muted)}
+
+/***  CALENDARIO  ***/
 #calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
-.navBtn{
-  background:none;border:none;font-size:1.4rem;cursor:pointer;
-  padding:.1rem .6rem;color:var(--accent);font-weight:600
-}
+.navBtn{background:none;border:none;font-size:1.4rem;cursor:pointer;padding:.1rem .6rem;color:var(--accent);font-weight:600}
 #monthLabel{font-size:1.2rem;font-weight:600}
 table{width:100%;border-collapse:collapse}
 th,td{
   width:14.285%;height:95px;text-align:left;vertical-align:top;
   border:1px solid var(--border);background:var(--card);position:relative
 }
-th{
-  background:#111;height:35px;font-size:.8rem;font-weight:600;
-  color:var(--muted)
-}
+th{background:#111;height:35px;font-size:.8rem;font-weight:600;color:var(--muted)}
 td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
 .badge{
   position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;
-  border-radius:50%;font-size:.65rem;width:18px;height:18px;
-  display:flex;align-items:center;justify-content:center
+  border-radius:50%;font-size:.65rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center
 }
 td.today{outline:3px solid var(--accent)}
+
+/***  LISTAS  ***/
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
 .sectionTitle{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem;color:var(--muted)}
-
 .task{
   display:flex;align-items:center;gap:.65rem;background:var(--card);
   border-left:6px solid var(--neutra);border-radius:8px;
@@ -85,7 +77,8 @@ td.today{outline:3px solid var(--accent)}
 .task input{width:1.05rem;height:1.05rem;cursor:pointer}
 .empty{opacity:.5;font-style:italic;padding:.5rem 0}
 
-details{margin-top:1.5rem}
+/***  FORMULARIO  ***/
+details{margin-top:1.4rem}
 summary{cursor:pointer;font-weight:600;margin-bottom:.7rem}
 form label{display:block;font-size:.83rem;margin:.35rem 0}
 form input,form select{
@@ -105,7 +98,7 @@ button:hover{opacity:.9}
 <h1>Agenda mensual · Mateo</h1>
 
 <!-- BUSCADOR GOOGLE -->
-<form id="searchBox" action="https://www.google.com/search" method="GET" target="_blank">
+<form id="searchBox" action="https://www.google.com/search">
   <input id="googleInput" name="q" type="search" placeholder="Buscar en Google…">
 </form>
 
@@ -120,14 +113,12 @@ button:hover{opacity:.9}
   <h2 id="todayHeader"></h2>
   <div id="tasks"></div>
 
+  <!-- FORMULARIO: hora al final -->
   <details>
     <summary>➕ Añadir pendiente</summary>
     <form id="addForm">
       <label>Fecha
         <input type="date" id="taskDate" required>
-      </label>
-      <label>Hora
-        <input type="time" id="taskTime">
       </label>
       <label>Descripción
         <input type="text" id="taskDesc" required placeholder="Ej. revisar inventario">
@@ -140,65 +131,61 @@ button:hover{opacity:.9}
           <option value="Alta">Alta</option>
         </select>
       </label>
+      <label>Hora (opcional)
+        <input type="time" id="taskTime">
+      </label>
       <button type="submit">Guardar</button>
     </form>
   </details>
 </div>
 
 <script>
-/* =========  CONFIG DROPBOX ========= */
-const DBX = new Dropbox.Dropbox({
-  accessToken: "TU_TOKEN_AQUÍ"
-});
-const DROPBOX_FILE = "/agendaMateo/tasks.json";
+/* === 1. Configurar Dropbox === */
+const DBX = new Dropbox.Dropbox({ accessToken: "TU_TOKEN_AQUÍ" });
+const DROPBOX_FILE = "/tasks.json";              // más simple: raíz de Dropbox
 
-/* =========  LÓGICA AGENDA  ========= */
+/* === 2. Datos y constantes === */
 const levels=["Neutra","Baja","Media","Alta","Urgente"];
 const escalateDays={Neutra:4,Baja:3,Media:2,Alta:1};
 let tasks=[];
 let viewDate=new Date();
 
-const parseYMD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
+/* === 3. Utils === */
+const parseYMD=s=>{const[p,m,d]=s.split("-").map(Number);return new Date(p,m-1,d);}
 const sameDate=(a,b)=>a.toDateString()===b.toDateString();
 
+/* === 4. Inicio === */
 init();
-
 async function init(){
-  tasks = await load();
+  tasks=await load();
   document.getElementById("prev").onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCal();};
   document.getElementById("next").onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCal();};
   document.getElementById("addForm").addEventListener("submit",addTask);
-  escalate();
-  renderCal();
-  renderList(new Date());
+  document.getElementById("googleInput").focus();        // auto-focus buscador
+  escalate();renderCal();renderList(new Date());
 }
 
+/* === 5. Carga y guardado === */
 async function load(){
   try{
-    const resp = await DBX.filesDownload({ path: DROPBOX_FILE });
-    const txt  = await resp.result.fileBlob.text();
-    return JSON.parse(txt);
+    const r=await DBX.filesDownload({path:DROPBOX_FILE});
+    return JSON.parse(await r.result.fileBlob.text());
   }catch{return [];}
 }
 async function save(){
-  await DBX.filesUpload({
-    path: DROPBOX_FILE,
-    mode:{".tag":"overwrite"},
-    contents: JSON.stringify(tasks)
-  });
+  await DBX.filesUpload({path:DROPBOX_FILE,mode:{".tag":"overwrite"},contents:JSON.stringify(tasks)});
 }
 
+/* === 6. Calendario === */
 function renderCal(){
   const y=viewDate.getFullYear(),m=viewDate.getMonth();
   document.getElementById("monthLabel").textContent=viewDate.toLocaleDateString("es-EC",{month:"long",year:"numeric"});
   const cal=document.getElementById("calendar");cal.innerHTML="";
   const head=document.createElement("tr");
-  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;head.appendChild(th);});
+  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;head.appendChild(th);} );
   cal.appendChild(head);
 
-  const first=new Date(y,m,1);
-  const start=(first.getDay()+6)%7; // lunes=0
-  const total=new Date(y,m+1,0).getDate();
+  const first=new Date(y,m,1),start=(first.getDay()+6)%7,total=new Date(y,m+1,0).getDate();
   let row=document.createElement("tr");
   for(let i=0;i<start;i++)row.appendChild(document.createElement("td"));
   for(let d=1;d<=total;d++){
@@ -217,6 +204,7 @@ function renderCal(){
   }
 }
 
+/* === 7. Lista diaria === */
 function renderList(date){
   document.getElementById("todayHeader").textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
   const wrap=document.getElementById("tasks");wrap.innerHTML="";
@@ -227,44 +215,38 @@ function renderList(date){
 
   if(pend.length){
     pend.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
-    pend.forEach(t=>wrap.appendChild(taskEl(t,date)));
+    pend.forEach(t=>wrap.appendChild(buildTask(t,date,false)));
   }
   if(comp.length){
-    const h=document.createElement("div");h.className="sectionTitle";h.textContent="Completados";
-    wrap.appendChild(h);
+    wrap.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
     comp.sort((a,b)=>b.id-a.id);
-    comp.forEach(t=>wrap.appendChild(taskEl(t,date,true)));
+    comp.forEach(t=>wrap.appendChild(buildTask(t,date,true)));
   }
 }
-
-function taskEl(t,focusDate,isComp=false){
-  const div=document.createElement("div");
-  div.className="task"+(isComp?" completed":"");div.dataset.priority=t.priority;
-  const chk=document.createElement("input");
-  chk.type="checkbox";chk.checked=isComp;
+function buildTask(t,focusDate,isDone){
+  const div=document.createElement("div");div.className="task"+(isDone?" completed":"");div.dataset.priority=t.priority;
+  const chk=document.createElement("input");chk.type="checkbox";chk.checked=isDone;
   chk.onchange=()=>toggleDone(t.id,focusDate);
   const span=document.createElement("span");
-  span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
+  const hora=t.time?` – ${t.time}`:"";
+  span.textContent=`[${t.priority}] ${t.desc}${hora}`;
   div.append(chk,span);return div;
 }
-
 async function toggleDone(id,focus){
-  const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await save();renderCal();renderList(focus);}
+  const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;await save();renderCal();renderList(focus);}
 }
 
+/* === 8. Añadir tarea === */
 async function addTask(e){
   e.preventDefault();
-  const f=document.getElementById("taskDate").value;
-  const h=document.getElementById("taskTime").value;
-  const d=document.getElementById("taskDesc").value.trim();
-  const p=document.getElementById("taskPriority").value;
+  const f=taskDate.value,d=taskDesc.value.trim(),p=taskPriority.value,h=taskTime.value;
   if(!f||!d)return;
   tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p,done:false});
   await save();escalate();renderCal();renderList(parseYMD(f));
   e.target.reset();e.target.parentElement.open=false;
 }
 
+/* === 9. Escalar prioridad y mover atrasadas === */
 function escalate(){
   const today=new Date();
   tasks.forEach(t=>{
