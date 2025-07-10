@@ -130,7 +130,19 @@ gapi.load("client:auth2",()=>{
   gapi.client.init({
     apiKey:API_KEY, clientId:CLIENT_ID, scope:SCOPES,
     discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]
-  }).then(()=>gapi.auth2.getAuthInstance().signIn({ux_mode:"popup"}))
+  }).then(()=>const auth = gapi.auth2.getAuthInstance();
+auth.signIn({
+  ux_mode: "redirect",
+  redirect_uri: window.location.href
+});
+// _No_ llames a initAgenda() aquí: la página se recargará tras aprobar permisos.
+async function initAgenda() {
+  // Si llegamos aquí por redirect, gapi ya ha almacenado el token automáticamente.
+  // Simplemente continuamos con la carga normal:
+  tasks = await loadTasks();
+  /* … resto de tu initAgenda … */
+}
+
     .then(initAgenda)
     .catch(e=>alert("Google Auth error: "+e.error));
 });
