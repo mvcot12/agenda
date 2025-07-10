@@ -3,110 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <title>Agenda mensual · Mateo</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<script>
-/* ------------- CONFIG ------------- */
-const TOKEN = `sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY`;
-const FILE_PATH = '/tasks.json';
-/* ------------- DATA ------------- */
-let tasks = [];
-const levels=["Neutra","Baja","Media","Alta","Urgente"];
-/* ------------- HELPERS ------------- */
-const api = async (endpoint, body)=>fetch('https://api.dropboxapi.com/2/'+endpoint,{
-  method:'POST',
-  headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},
-  body:JSON.stringify(body)
-}).then(r=>r.json());
-
-const download = async ()=>{
-  const {url} = await api('files/get_temporary_link',{path:FILE_PATH});
-  if(!url) return [];
-  const txt = await fetch(url).then(r=>r.text()).catch(()=>null);
-  return txt ? JSON.parse(txt) : [];
-};
-
-const upload = async (content)=>{
-  await fetch('https://content.dropboxapi.com/2/files/upload',{
-    method:'POST',
-    headers:{
-      'Authorization':'Bearer '+TOKEN,
-      'Dropbox-API-Arg':JSON.stringify({path:FILE_PATH,mode:'overwrite'}),
-      'Content-Type':'application/octet-stream'
-    },
-    body:content
-  });
-};
-/* ------------- INIT ------------- */
-(async()=>{
-  // ... (pon aquí todo tu código de UI, pero sustituye load()/save())
-  tasks = await download();
-  // renderAll(), eventos, etc.
-})();
-/* Y siempre que necesites guardar: */
-await upload(JSON.stringify(tasks));
-tasks = await download(); // para que el otro dispositivo vea lo mismo después de F5
-</script>
-
-
 <style>
 :root{
-  --bg:#fafafa;--card:#ffffff;--border:#e0e0e0;--txt:#333;--muted:#666;
-  --accent:#2ecc71;--neutra:#b2bec3;--baja:#9b59b6;--media:#f1c40f;--alta:#e67e22;--urgente:#e74c3c;
+  --bg:#fafafa; --card:#ffffff; --border:#e1e1e1; --txt:#333; --muted:#666;
+  --accent:#2ecc71;
+  --neutra:#b2bec3; --baja:#9b59b6; --media:#f1c40f; --alta:#e67e22; --urgente:#e74c3c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column;align-items:center;padding:1.4rem}
-h1{font-size:1.7rem;font-weight:600;margin-bottom:1rem;text-align:center}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column;align-items:center;padding:1.25rem}
+h1{font-size:1.75rem;font-weight:600;margin-bottom:1rem;text-align:center}
 .container{width:100%;max-width:900px}
 
-/* Buscador */
-#searchBox{display:flex;justify-content:center;margin-bottom:1.1rem}
-#googleInput{flex:1;max-width:360px;background:var(--card);color:var(--txt);border:1px solid var(--border);border-radius:999px;padding:.48rem 1rem;font-size:.92rem}
+/* buscador */
+#searchBox{display:flex;justify-content:center;margin-bottom:1rem}
+#googleInput{flex:1;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem;font-size:.95rem;color:var(--txt)}
 #googleInput::placeholder{color:var(--muted)}
 
-/* Calendario */
+/* calendario */
 #calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
-.navBtn{background:none;border:none;font-size:1.4rem;color:var(--accent);cursor:pointer;font-weight:600}
-#monthLabel{font-size:1.2rem;font-weight:600}
+.nav{background:none;border:none;font-size:1.4rem;color:var(--accent);cursor:pointer;font-weight:600}
+#monthLabel{font-size:1.25rem;font-weight:600}
 table{width:100%;border-collapse:collapse}
-th,td{width:14.285%;height:95px;vertical-align:top;text-align:left;border:1px solid var(--border);background:var(--card);position:relative}
-th{background:#f0f0f0;height:35px;font-size:.8rem;font-weight:600;color:var(--muted)}
-td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
+th,td{width:14.285%;height:95px;border:1px solid var(--border);background:var(--card);vertical-align:top;position:relative}
+th{background:#f0f0f0;font-size:.8rem;font-weight:600;color:var(--muted);height:35px}
+td span.day{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
 .badge{position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;border-radius:50%;font-size:.65rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center}
-td.today{outline:3px solid var(--accent)}
+.today{outline:3px solid var(--accent)}
 
-/* Lista */
+/* lista diaria */
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
-.sectionTitle{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem;color:var(--muted)}
-.task{display:flex;gap:.65rem;align-items:center;background:var(--card);border-left:6px solid var(--neutra);border-radius:8px;padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-[data-p="Baja"]{border-color:var(--baja)}[data-p="Media"]{border-color:var(--media)}[data-p="Alta"]{border-color:var(--alta)}[data-p="Urgente"]{border-color:var(--urgente)}
+.section{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem;color:var(--muted)}
+.task{display:flex;align-items:center;gap:.65rem;background:var(--card);border-left:6px solid var(--neutra);border-radius:8px;padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+[data-prio="Baja"]   {border-color:var(--baja)}
+[data-prio="Media"]  {border-color:var(--media)}
+[data-prio="Alta"]   {border-color:var(--alta)}
+[data-prio="Urgente"]{border-color:var(--urgente)}
 .task.completed{opacity:.45;text-decoration:line-through}
 .task span{flex:1;font-size:.9rem}
 .task input{width:1.05rem;height:1.05rem;cursor:pointer}
 .empty{opacity:.55;font-style:italic;padding:.5rem 0}
 
-/* Formulario */
-details{margin-top:1.3rem}
+/* formulario */
+details{margin-top:1.2rem}
 summary{cursor:pointer;font-weight:600;margin-bottom:.7rem}
 form label{display:block;font-size:.83rem;margin:.35rem 0}
-form input,form select{width:100%;padding:.42rem .5rem;font-size:.83rem;background:var(--card);color:var(--txt);border:1px solid var(--border);border-radius:6px}
+form input,form select{width:100%;padding:.4rem .5rem;font-size:.83rem;background:var(--card);color:var(--txt);border:1px solid var(--border);border-radius:6px}
 form input::placeholder{color:var(--muted)}
-button{border:none;background:var(--accent);color:#fff;font-weight:600;padding:.5rem 1.1rem;border-radius:6px;margin-top:.8rem;cursor:pointer}
+button{border:none;background:var(--accent);color:#fff;font-weight:600;padding:.5rem 1.2rem;border-radius:6px;margin-top:.8rem;cursor:pointer}
 button:hover{opacity:.9}
 </style>
 </head>
 <body>
 <h1>Agenda mensual · Mateo</h1>
 
+<!-- Buscador Google -->
 <form id="searchBox" action="https://www.google.com/search">
   <input id="googleInput" name="q" type="search" placeholder="Buscar en Google…">
 </form>
 
 <div class="container">
   <div id="calHeader">
-    <button class="navBtn" id="prev">&lt;</button>
+    <button class="nav" id="prev">&#x276E;</button>
     <div id="monthLabel"></div>
-    <button class="navBtn" id="next">&gt;</button>
+    <button class="nav" id="next">&#x276F;</button>
   </div>
   <table id="calendar"></table>
 
@@ -116,143 +77,147 @@ button:hover{opacity:.9}
   <details>
     <summary>➕ Añadir pendiente</summary>
     <form id="addForm">
-      <label>Fecha <input type="date" id="taskDate" required></label>
-      <label>Descripción <input type="text" id="taskDesc" required placeholder="Ej. revisar inventario"></label>
+      <label>Fecha <input type="date" id="fDate" required></label>
+      <label>Descripción <input type="text" id="fDesc" required></label>
       <label>Prioridad
-        <select id="taskPriority">
+        <select id="fPrio">
           <option>Neutra</option><option>Baja</option><option>Media</option><option>Alta</option>
         </select>
       </label>
-      <label>Hora (opcional) <input type="time" id="taskTime"></label>
+      <label>Hora (opcional) <input type="time" id="fTime"></label>
       <button>Guardar</button>
     </form>
   </details>
 </div>
 
 <script>
-/* ---------- CONFIG DROPBOX ---------- */
-const DBX = new Dropbox.Dropbox({ accessToken:`sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY` });
-const FILE = "/tasks.json";
+/* -------------------- CONFIG -------------------- */
+const TOKEN   = `sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY`;
+const FILE    = '/tasks.json';
+/* -------------------- DATOS -------------------- */
+let tasks=[];            // [{id,date,desc,priority,time,done}]
+let viewDate=new Date(); // mes visible
+const LEVELS = ["Neutra","Baja","Media","Alta","Urgente"];
+const ESCALATE = {Neutra:4,Baja:3,Media:2,Alta:1};
 
-/* ---------- DATA ---------- */
-let tasks = [];
-const levels = ["Neutra","Baja","Media","Alta","Urgente"];
-const escalateDays = {Neutra:4,Baja:3,Media:2,Alta:1};
+/* -------------------- HELPERS -------------------- */
+const $ = id=>document.getElementById(id);
+const dateISO   = d=>d.toISOString().slice(0,10);
+const parseDate = s=>new Date(s+"T00:00");
+const sameDate  = (a,b)=>dateISO(a)===dateISO(b);
 
-/* ---------- HELPERS ---------- */
-const calendar  = document.getElementById("calendar");
-const prev      = document.getElementById("prev");
-const next      = document.getElementById("next");
-const monthLabel= document.getElementById("monthLabel");
-const taskList  = document.getElementById("tasks");
-let   viewDate  = new Date();
+/* Dropbox REST fetch */
+const dbox = (endpoint,body)=>fetch('https://api.dropboxapi.com/2/'+endpoint,{
+  method:'POST',
+  headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},
+  body:JSON.stringify(body)
+}).then(r=>r.json());
 
-const dateISO = d => d.toISOString().slice(0,10);
-const same    = (a,b)=>dateISO(a)===dateISO(b);
-const parse   = s => new Date(s+"T00:00");
-
-/* ---------- INIT ---------- */
-(async()=>{
-  tasks = await load();
-  googleInput.focus();
-  renderAll(new Date());
-  prev.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCal()};
-  next.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCal()};
-  addForm.onsubmit = handleAdd;
-})();
-
-/* ---------- Dropbox I/O ---------- */
-async function load(){
-  try{ const r=await DBX.filesDownload({path:FILE});
-       return JSON.parse(await r.result.fileBlob.text()) }catch{ return []; }
-}
-async function save(){
-  await DBX.filesUpload({path:FILE,mode:{".tag":"overwrite"},contents:JSON.stringify(tasks)});
-  tasks = await load();            // re-carga para dispositivos externos
+async function loadTasks(){
+  const {url}=await dbox('files/get_temporary_link',{path:FILE});
+  if(!url)return [];
+  try{const txt=await fetch(url).then(r=>r.text());return JSON.parse(txt)||[]}catch{return []}
 }
 
-/* ---------- RENDER ---------- */
-function renderAll(date){renderCal();renderList(date)}
-function renderCal(){
-  monthLabel.textContent = viewDate.toLocaleDateString("es-EC",{month:"long",year:"numeric"});
-  calendar.innerHTML="";
+async function saveTasks(){
+  await fetch('https://content.dropboxapi.com/2/files/upload',{
+    method:'POST',
+    headers:{
+      'Authorization':'Bearer '+TOKEN,
+      'Dropbox-API-Arg':JSON.stringify({path:FILE,mode:'overwrite'}),
+      'Content-Type':'application/octet-stream'
+    },
+    body:JSON.stringify(tasks)
+  });
+}
+
+/* -------------------- RENDER -------------------- */
+function buildCalendar(){
+  const cal=$('calendar');cal.innerHTML="";
   const y=viewDate.getFullYear(),m=viewDate.getMonth();
-  const first=new Date(y,m,1);
-  const offset=(first.getDay()+6)%7;
-  const days=new Date(y,m+1,0).getDate();
+  $('monthLabel').textContent=viewDate.toLocaleDateString('es-EC',{month:'long',year:'numeric'});
+  const head=document.createElement('tr');
+  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement('th');th.textContent=d;head.appendChild(th)});
+  cal.appendChild(head);
 
-  const header=document.createElement("tr");
-  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;header.appendChild(th)});
-  calendar.appendChild(header);
+  const offset=(new Date(y,m,1).getDay()+6)%7;
+  const days  =new Date(y,m+1,0).getDate();
+  let row=document.createElement('tr');
+  for(let i=0;i<offset;i++)row.appendChild(document.createElement('td'));
 
-  let row=document.createElement("tr");
-  for(let i=0;i<offset;i++)row.appendChild(document.createElement("td"));
   for(let d=1;d<=days;d++){
-    const day=new Date(y,m,d);
-    const td=document.createElement("td");
-    if(same(day,new Date()))td.classList.add("today");
-    td.innerHTML=`<span class="dayNum">${d}</span>`;
-    const cnt=tasks.filter(t=>!t.done&&same(parse(t.date),day)).length;
-    if(cnt){const b=document.createElement("div");b.className="badge";b.textContent=cnt;td.appendChild(b)}
-    td.onclick=()=>{viewDate=day;renderList(day)};
-    row.appendChild(td);
+    const day=new Date(y,m,d);const cell=document.createElement('td');
+    if(sameDate(day,new Date()))cell.classList.add('today');
+    cell.innerHTML=`<span class="day">${d}</span>`;
+    const cnt=tasks.filter(t=>!t.done&&sameDate(parseDate(t.date),day)).length;
+    if(cnt){const b=document.createElement('div');b.className='badge';b.textContent=cnt;cell.appendChild(b);}
+    cell.onclick=()=>{viewDate=day;renderList(day)};
+    row.appendChild(cell);
     if((offset+d)%7===0||d===days){
-      while(row.children.length<7)row.appendChild(document.createElement("td"));
-      calendar.appendChild(row);row=document.createElement("tr");
+      while(row.children.length<7)row.appendChild(document.createElement('td'));
+      cal.appendChild(row);row=document.createElement('tr');
     }
   }
 }
 function renderList(date){
-  document.getElementById("todayHeader").textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-  taskList.innerHTML="";
-  const pend=tasks.filter(t=>!t.done&&same(parse(t.date),date));
-  const comp=tasks.filter(t=> t.done&&same(parse(t.date),date));
+  $('todayHeader').textContent=date.toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long'});
+  const list=$('tasks');list.innerHTML="";
+  const pend=tasks.filter(t=>!t.done&&sameDate(parseDate(t.date),date));
+  const comp=tasks.filter(t=> t.done&&sameDate(parseDate(t.date),date));
 
-  if(!pend.length && !comp.length){
-    taskList.innerHTML='<div class="empty">Sin pendientes.</div>';return;
-  }
-  pend.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority)).forEach(t=>taskList.append(taskEl(t,date,false)));
+  if(!pend.length&&!comp.length){list.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
+  pend.sort((a,b)=>LEVELS.indexOf(b.priority)-LEVELS.indexOf(a.priority)).forEach(t=>list.append(taskElement(t,false,date)));
   if(comp.length){
-    taskList.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
-    comp.sort((a,b)=>b.id-a.id).forEach(t=>taskList.append(taskEl(t,date,true)));
+    list.insertAdjacentHTML('beforeend','<div class="section sectionTitle">Completados</div>');
+    comp.sort((a,b)=>b.id-a.id).forEach(t=>list.append(taskElement(t,true,date)));
   }
 }
-function taskEl(t,focus,done){
-  const d=document.createElement("div");d.className="task"+(done?" completed":"");d.dataset.p=t.priority;
-  const c=document.createElement("input");c.type="checkbox";c.checked=done;c.onchange=()=>toggle(t.id,focus);
-  const s=document.createElement("span");s.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:""}`;
-  d.append(c,s);return d;
+function taskElement(t,done,focus){
+  const div=document.createElement('div');div.className='task'+(done?' completed':'');div.dataset.prio=t.priority;
+  const chk=document.createElement('input');chk.type='checkbox';chk.checked=done;
+  chk.onchange=()=>toggleDone(t.id,focus);
+  const span=document.createElement('span');
+  span.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:''}`;
+  div.append(chk,span);return div;
 }
 
-/* ---------- ACTIONS ---------- */
-async function toggle(id,focus){
-  const t=tasks.find(x=>x.id===id);t.done=!t.done;renderAll(focus);await save();
-}
-async function handleAdd(e){
-  e.preventDefault();
-  const fd=taskDate.value,desc=taskDesc.value.trim(),pri=taskPriority.value,hr=taskTime.value;
-  if(!fd||!desc)return;
-  tasks.push({id:Date.now(),date:fd,desc,priority:pri,time:hr,done:false});
-  await save();renderAll(parse(fd));addForm.reset();addForm.parentElement.open=false;
-}
-
-/* ---------- ESCALATE (opcional: llama manual si quieres) ---------- */
+/* -------------------- LOGIC -------------------- */
 function escalateLate(){
-  const today=parse(dateISO(new Date()));
+  const today=parseDate(dateISO(new Date()));
   tasks.forEach(t=>{
     if(t.done)return;
-    const d=parse(t.date);
+    const d=parseDate(t.date);
     if(d<today){
-      const diff=(today-d)/86400000;
       t.date=dateISO(today);
-      const lim=escalateDays[t.priority];
+      const diff=(today-d)/86400000;
+      const lim=ESCALATE[t.priority];
       if(lim!==undefined&&diff>=lim){
-        const idx=levels.indexOf(t.priority);
-        if(idx<levels.length-1)t.priority=levels[idx+1];
+        const idx=LEVELS.indexOf(t.priority);if(idx<LEVELS.length-1)t.priority=LEVELS[idx+1];
       }
     }
   });
 }
+async function toggleDone(id,focus){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  t.done=!t.done;renderList(focus);buildCalendar();await saveTasks();
+}
+async function addTask(e){
+  e.preventDefault();
+  if(!fDate.value||!fDesc.value.trim())return;
+  tasks.push({id:Date.now(),date:fDate.value,desc:fDesc.value.trim(),priority:fPrio.value,time:fTime.value,done:false});
+  escalateLate();await saveTasks();buildCalendar();renderList(parseDate(fDate.value));e.target.reset();e.target.parentElement.open=false;
+}
+
+/* -------------------- INIT -------------------- */
+(async()=>{
+  tasks=await loadTasks();
+  escalateLate();await saveTasks(); // crea el archivo si no existe
+  buildCalendar();renderList(new Date());
+  $('prev').onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);buildCalendar()};
+  $('next').onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);buildCalendar()};
+  $('addForm').addEventListener('submit',addTask);
+  $('googleInput').focus();
+})();
 </script>
 </body>
 </html>
