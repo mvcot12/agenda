@@ -9,22 +9,19 @@
 <script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
 
 <style>
-/*=========  MODO NOCTURNO  =========*/
 :root{
-  --bg:#000;          --card:#151515;  --border:#333;   --txt:#eaeaea;
-  --muted:#8b8b8b;    --accent:#2ecc71;
-  --neutra:#5f5f5f;   --baja:#9b59b6;  --media:#f1c40f; --alta:#e67e22; --urgente:#e74c3c;
+  --bg:#000; --card:#151515; --border:#333; --txt:#eaeaea; --muted:#8b8b8b;
+  --accent:#2ecc71; --neutra:#5f5f5f; --baja:#9b59b6; --media:#f1c40f;
+  --alta:#e67e22; --urgente:#e74c3c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:'Inter',Arial,Helvetica,sans-serif;
-  background:var(--bg);color:var(--txt);
+  font-family:'Inter',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--txt);
   display:flex;flex-direction:column;align-items:center;padding:1.4rem;
 }
 h1{font-size:1.7rem;font-weight:600;margin-bottom:1rem;text-align:center}
 .container{width:100%;max-width:900px}
-
-/*== BUSCADOR ==*/
+/* buscador */
 #searchBox{display:flex;justify-content:center;margin-bottom:1.15rem}
 #googleInput{
   flex:1;max-width:360px;background:var(--card);color:var(--txt);
@@ -32,69 +29,51 @@ h1{font-size:1.7rem;font-weight:600;margin-bottom:1rem;text-align:center}
   padding:.48rem 1rem;font-size:.92rem;
 }
 #googleInput::placeholder{color:var(--muted)}
-
-/*== CALENDARIO ==*/
+/* calendario */
 #calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
-.navBtn{
-  background:none;border:none;font-size:1.4rem;cursor:pointer;
-  padding:.1rem .65rem;color:var(--accent);font-weight:600
-}
+.navBtn{background:none;border:none;font-size:1.4rem;color:var(--accent);cursor:pointer;font-weight:600}
 #monthLabel{font-size:1.2rem;font-weight:600}
 table{width:100%;border-collapse:collapse}
 th,td{
-  width:14.285%;height:95px;text-align:left;vertical-align:top;
+  width:14.285%;height:95px;vertical-align:top;text-align:left;
   border:1px solid var(--border);background:var(--card);position:relative
 }
 th{background:#111;height:35px;font-size:.8rem;font-weight:600;color:var(--muted)}
 td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
-.badge{
-  position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;
-  border-radius:50%;font-size:.65rem;width:18px;height:18px;
-  display:flex;align-items:center;justify-content:center
-}
+.badge{position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;border-radius:50%;font-size:.65rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center}
 td.today{outline:3px solid var(--accent)}
-
-/*== LISTAS ==*/
+/* lista */
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
 .sectionTitle{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem;color:var(--muted)}
 .task{
-  display:flex;align-items:center;gap:.65rem;background:var(--card);
+  display:flex;gap:.65rem;align-items:center;background:var(--card);
   border-left:6px solid var(--neutra);border-radius:8px;
-  padding:.55rem .8rem;margin-bottom:.45rem;
-  box-shadow:0 2px 4px rgba(0,0,0,.5)
+  padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 2px 4px rgba(0,0,0,.5)
 }
-[data-priority="Baja"]   {border-color:var(--baja)}
-[data-priority="Media"]  {border-color:var(--media)}
-[data-priority="Alta"]   {border-color:var(--alta)}
+[data-priority="Baja"]{border-color:var(--baja)}
+[data-priority="Media"]{border-color:var(--media)}
+[data-priority="Alta"]{border-color:var(--alta)}
 [data-priority="Urgente"]{border-color:var(--urgente)}
-.task.completed{
-  opacity:.32;filter:grayscale(1);text-decoration:line-through
-}
+.task.completed{opacity:.32;filter:grayscale(1);text-decoration:line-through}
 .task span{flex:1;font-size:.9rem}
 .task input{width:1.05rem;height:1.05rem;cursor:pointer}
 .empty{opacity:.55;font-style:italic;padding:.5rem 0}
-
-/*== FORMULARIO ==*/
+/* formulario */
 details{margin-top:1.4rem}
 summary{cursor:pointer;font-weight:600;margin-bottom:.7rem}
 form label{display:block;font-size:.83rem;margin:.35rem 0}
 form input,form select{
-  width:100%;padding:.42rem .5rem;font-size:.83rem;
-  background:var(--card);color:var(--txt);
+  width:100%;padding:.42rem .5rem;font-size:.83rem;background:var(--card);color:var(--txt);
   border:1px solid var(--border);border-radius:6px;
 }
 form input::placeholder{color:var(--muted)}
-button{
-  border:none;background:var(--accent);color:#fff;font-weight:600;
-  padding:.5rem 1.1rem;border-radius:6px;margin-top:.8rem;cursor:pointer
-}
+button{border:none;background:var(--accent);color:#fff;font-weight:600;padding:.5rem 1.1rem;border-radius:6px;margin-top:.8rem;cursor:pointer}
 button:hover{opacity:.88}
 </style>
 </head>
 <body>
 <h1>Agenda mensual · Mateo</h1>
 
-<!-- BUSCADOR Google -->
 <form id="searchBox" action="https://www.google.com/search">
   <input id="googleInput" name="q" type="search" placeholder="Buscar en Google…">
 </form>
@@ -110,7 +89,6 @@ button:hover{opacity:.88}
   <h2 id="todayHeader"></h2>
   <div id="tasks"></div>
 
-  <!-- FORMULARIO -->
   <details>
     <summary>➕ Añadir pendiente</summary>
     <form id="addForm">
@@ -137,48 +115,48 @@ button:hover{opacity:.88}
 </div>
 
 <script>
-/*========= CONFIG DROPBOX =========*/
-const DBX = new Dropbox.Dropbox({ accessToken:"TU_TOKEN_AQUÍ"});
-const FILE = "/tasks.json";
+/* =======  CONFIG  ======= */
+const DBX = new Dropbox.Dropbox({ accessToken:"TU_TOKEN_AQUÍ" });
+const FILE="/tasks.json";
 
-/*========= CONSTANTES =========*/
 const levels=["Neutra","Baja","Media","Alta","Urgente"];
 const escalate={Neutra:4,Baja:3,Media:2,Alta:1};
 let tasks=[], viewDate=new Date();
 
-/*========= UTILIDADES =========*/
 const parseYMD=s=>{const[a,b,c]=s.split("-").map(Number);return new Date(a,b-1,c)}
 const same=(a,b)=>a.toDateString()===b.toDateString();
 
-/*========= INICIO =========*/
+/* ======  ARRANQUE  ====== */
 (async()=>{
   tasks=await load();
-  prev.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()-1);drawCal()};
-  next.onclick = ()=>{viewDate.setMonth(viewDate.getMonth()+1);drawCal()};
+  prev.onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);drawCal()};
+  next.onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);drawCal()};
   addForm.addEventListener("submit",addTask);
-  googleInput.focus();              // autofocus buscador
+  googleInput.focus();
   escalateLate();drawCal();drawList(new Date());
 })();
 
-/*========= LOAD / SAVE =========*/
+/* ======  I/O Dropbox  ====== */
 async function load(){
   try{
     const r=await DBX.filesDownload({path:FILE});
     return JSON.parse(await r.result.fileBlob.text());
-  }catch{ return [] }
+  }catch{return [];}
 }
-async function save(){
+async function saveAndReload(){
   await DBX.filesUpload({path:FILE,mode:{".tag":"overwrite"},contents:JSON.stringify(tasks)});
+  tasks=await load(); // recarga para asegurar sincronía
 }
 
-/*========= CALENDARIO =========*/
+/* ======  CALENDARIO  ====== */
 function drawCal(){
   monthLabel.textContent=viewDate.toLocaleDateString("es-EC",{month:"long",year:"numeric"});
-  const y=viewDate.getFullYear(),m=viewDate.getMonth();
   calendar.innerHTML="";
   const head=document.createElement("tr");
   ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;head.appendChild(th);});
   calendar.appendChild(head);
+
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();
   const first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate();
   let row=document.createElement("tr");
   for(let i=0;i<start;i++)row.appendChild(document.createElement("td"));
@@ -198,52 +176,48 @@ function drawCal(){
   }
 }
 
-/*========= LISTA DIARIA =========*/
+/* ======  LISTA DIARIA  ====== */
 function drawList(date){
   todayHeader.textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-  tasksDiv.innerHTML="";
+  const listDiv=document.getElementById("tasks");listDiv.innerHTML="";
   const pend=tasks.filter(t=>!t.done && same(parseYMD(t.date),date));
   const comp=tasks.filter(t=> t.done && same(parseYMD(t.date),date));
 
-  if(!pend.length && !comp.length){tasksDiv.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
+  if(!pend.length && !comp.length){listDiv.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
 
   if(pend.length){
     pend.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
-    pend.forEach(t=>tasksDiv.append(taskEl(t,date,false)));
+    pend.forEach(t=>listDiv.append(buildTask(t,date,false)));
   }
   if(comp.length){
-    tasksDiv.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
+    listDiv.insertAdjacentHTML("beforeend",'<div class="sectionTitle">Completados</div>');
     comp.sort((a,b)=>b.id-a.id);
-    comp.forEach(t=>tasksDiv.append(taskEl(t,date,true)));
+    comp.forEach(t=>listDiv.append(buildTask(t,date,true)));
   }
 }
-function taskEl(t,focus,isDone){
-  const d=document.createElement("div");
-  d.className="task"+(isDone?" completed":"");d.dataset.priority=t.priority;
-  const c=document.createElement("input");
-  c.type="checkbox";c.checked=isDone;c.onchange=()=>toggle(t.id,focus);
-  const s=document.createElement("span");
-  s.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:""}`;
+function buildTask(t,focus,isDone){
+  const d=document.createElement("div");d.className="task"+(isDone?" completed":"");d.dataset.priority=t.priority;
+  const c=document.createElement("input");c.type="checkbox";c.checked=isDone;c.onchange=()=>toggle(t.id,focus);
+  const s=document.createElement("span");s.textContent=`[${t.priority}] ${t.desc}${t.time?` – ${t.time}`:""}`;
   d.append(c,s);return d;
 }
 
-/*========= TOGGLE DONE =========*/
+/* ======  TOGGLE DONE ====== */
 async function toggle(id,focus){
-  const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await save();drawCal();drawList(focus);}
+  const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;await saveAndReload();drawCal();drawList(focus);}
 }
 
-/*========= ADD TASK =========*/
+/* ======  AÑADIR TAREA ====== */
 async function addTask(e){
   e.preventDefault();
-  const {taskDate:fd,taskDesc:dd,taskPriority:pp,taskTime:hh}=e.target.elements;
-  if(!fd.value||!dd.value.trim())return;
-  tasks.push({id:Date.now(),date:fd.value,time:hh.value,desc:dd.value.trim(),priority:pp.value,done:false});
-  await save();escalateLate();drawCal();drawList(parseYMD(fd.value));
+  const f=taskDate.value.trim(),d=taskDesc.value.trim(),p=taskPriority.value,h=taskTime.value;
+  if(!f||!d)return;
+  tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p,done:false});
+  await saveAndReload();escalateLate();drawCal();drawList(parseYMD(f));
   e.target.reset();e.target.parentElement.open=false;
 }
 
-/*========= ESCALADO DE PRIORIDAD =========*/
+/* ======  ESCALADO ====== */
 function escalateLate(){
   const today=new Date();
   tasks.forEach(t=>{
@@ -252,8 +226,8 @@ function escalateLate(){
     if(d<today){
       const diff=Math.floor((today-d)/86400000);
       t.date=today.toISOString().split("T")[0];
-      const rule=escalate[t.priority];
-      if(rule!==undefined&&diff>=rule){
+      const r=escalate[t.priority];
+      if(r!==undefined&&diff>=r){
         const i=levels.indexOf(t.priority);
         if(i<levels.length-1)t.priority=levels[i+1];
       }
