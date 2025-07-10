@@ -48,6 +48,7 @@ td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:60
 }
 td.today{outline:3px solid var(--accent)}
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
+.sectionTitle{font-size:.9rem;font-weight:600;margin:.6rem 0 .3rem}
 .task{
   display:flex;align-items:center;gap:.65rem;background:var(--card);
   border-left:6px solid var(--neutra);border-radius:8px;
@@ -57,6 +58,7 @@ td.today{outline:3px solid var(--accent)}
 [data-priority="Media"]{border-color:var(--media)}
 [data-priority="Alta"]{border-color:var(--alta)}
 [data-priority="Urgente"]{border-color:var(--urgente)}
+.task.completed{opacity:.45;text-decoration:line-through}
 .task span{flex:1;font-size:.9rem}
 .task input{width:1.05rem;height:1.05rem;cursor:pointer}
 .empty{opacity:.6;font-style:italic;padding:.5rem 0}
@@ -119,13 +121,11 @@ const DBX = new Dropbox.Dropbox({
 });
 const DROPBOX_FILE = "/agendaMateo/tasks.json";
 
-/* === Agenda lógica === */
-const STORAGE_KEY="agendaMateoTasks"; // ya no se usa local, pero mantenemos var
 const levels=["Neutra","Baja","Media","Alta","Urgente"];
-const escalateDays={Neutra:4,Baja:3,Media:2,Alta:1}; // días para subir
-let tasks=[]; // se llenará con load()
+const escalateDays={Neutra:4,Baja:3,Media:2,Alta:1};
+let tasks=[];
 
-let viewDate=new Date(); // mes mostrado
+let viewDate=new Date();
 
 const parseYMD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
 const sameDate=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
@@ -143,49 +143,43 @@ async function init(){
 }
 
 async function load(){
-  try{
+  try {
     const resp = await DBX.filesDownload({ path: DROPBOX_FILE });
     const txt  = await resp.result.fileBlob.text();
     return JSON.parse(txt);
-  }catch{
-    return [];
-  }
+  }catch{return [];}
 }
 async function save(){
-  const content = JSON.stringify(tasks);
   await DBX.filesUpload({
     path: DROPBOX_FILE,
-    mode: { ".tag": "overwrite" },
-    contents: content
+    mode:{".tag":"overwrite"},
+    contents: JSON.stringify(tasks)
   });
 }
 
 function renderCal(){
-  const year=viewDate.getFullYear(),month=viewDate.getMonth();
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();
   document.getElementById("monthLabel").textContent=viewDate.toLocaleDateString("es-EC",{month:"long",year:"numeric"});
-  const cal=document.getElementById("calendar");
-  cal.innerHTML="";
+  const cal=document.getElementById("calendar");cal.innerHTML="";
   const header=document.createElement("tr");
-  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{
-    const th=document.createElement("th");th.textContent=d;header.appendChild(th);
-  });
+  ["lun","mar","mié","jue","vie","sáb","dom"].forEach(d=>{const th=document.createElement("th");th.textContent=d;header.appendChild(th);});
   cal.appendChild(header);
 
-  const firstDay=new Date(year,month,1);
-  const startIndex=(firstDay.getDay()+6)%7; // lunes=0
-  const daysInMonth=new Date(year,month+1,0).getDate();
+  const first=new Date(y,m,1);
+  const start=(first.getDay()+6)%7;
+  const daysInMonth=new Date(y,m+1,0).getDate();
   let row=document.createElement("tr");
-  for(let i=0;i<startIndex;i++)row.appendChild(document.createElement("td"));
+  for(let i=0;i<start;i++)row.appendChild(document.createElement("td"));
   for(let d=1;d<=daysInMonth;d++){
-    const date=new Date(year,month,d);
+    const date=new Date(y,m,d);
     const td=document.createElement("td");
     if(sameDate(date,new Date()))td.classList.add("today");
     td.innerHTML=`<span class="dayNum">${d}</span>`;
-    const count=tasks.filter(t=>sameDate(parseYMD(t.date),date)).length;
+    const count=tasks.filter(t=>!t.done && sameDate(parseYMD(t.date),date)).length;
     if(count){const b=document.createElement("div");b.className="badge";b.textContent=count;td.appendChild(b);}
     td.onclick=()=>renderList(date);
     row.appendChild(td);
-    if((startIndex+d)%7===0||d===daysInMonth){
+    if((start+d)%7===0||d===daysInMonth){
       while(row.children.length<7)row.appendChild(document.createElement("td"));
       cal.appendChild(row);row=document.createElement("tr");
     }
@@ -194,16 +188,37 @@ function renderCal(){
 
 function renderList(date){
   document.getElementById("todayHeader").textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-  const list=document.getElementById("tasks");list.innerHTML="";
-  const dayTasks=tasks.filter(t=>sameDate(parseYMD(t.date),date));
-  if(!dayTasks.length){list.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
-  dayTasks.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
-  dayTasks.forEach(t=>{
-    const div=document.createElement("div");div.className="task";div.dataset.priority=t.priority;
-    const chk=document.createElement("input");chk.type="checkbox";chk.onchange=()=>complete(t.id,date);
-    const span=document.createElement("span");span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
-    div.append(chk,span);list.appendChild(div);
-  });
+  const wrap=document.getElementById("tasks");wrap.innerHTML="";
+  const pend=tasks.filter(t=>!t.done && sameDate(parseYMD(t.date),date));
+  const comp=tasks.filter(t=>t.done && sameDate(parseYMD(t.date),date));
+
+  if(!pend.length && !comp.length){wrap.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
+
+  if(pend.length){
+    pend.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
+    pend.forEach(t=>wrap.appendChild(buildTaskEl(t,false,date)));
+  }
+  if(comp.length){
+    const h=document.createElement("div");h.className="sectionTitle";h.textContent="Completados";
+    wrap.appendChild(h);
+    comp.sort((a,b)=>b.id-a.id); // recientes arriba
+    comp.forEach(t=>wrap.appendChild(buildTaskEl(t,true,date)));
+  }
+}
+
+function buildTaskEl(t,isComp,date){
+  const div=document.createElement("div");
+  div.className="task"+(isComp?" completed":"");div.dataset.priority=t.priority;
+  const chk=document.createElement("input");chk.type="checkbox";chk.checked=isComp;
+  chk.onchange=()=>toggleDone(t.id,date);
+  const span=document.createElement("span");
+  span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
+  div.append(chk,span);return div;
+}
+
+async function toggleDone(id,focusDate){
+  const task=tasks.find(x=>x.id===id);
+  if(task){task.done=!task.done;await save();renderCal();renderList(focusDate);}
 }
 
 async function addTask(e){
@@ -213,26 +228,25 @@ async function addTask(e){
   const d=document.getElementById("taskDesc").value.trim();
   const p=document.getElementById("taskPriority").value;
   if(!f||!d)return;
-  tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p});
-  await save();
-  escalate();renderCal();renderList(parseYMD(f));
+  tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p,done:false});
+  await save();escalate();renderCal();renderList(parseYMD(f));
   e.target.reset();e.target.parentElement.open=false;
 }
 
 async function complete(id,focusDate){
-  tasks=tasks.filter(t=>t.id!==id);
-  await save();escalate();renderCal();renderList(focusDate);
+  const t=tasks.find(x=>x.id===id);if(t){t.done=true;await save();renderCal();renderList(focusDate);}
 }
 
 function escalate(){
   const today=new Date();
   tasks.forEach(t=>{
+    if(t.done)return;
     const d=parseYMD(t.date);
     if(d<today){
       const diff=Math.floor((today-d)/86400000);
       t.date=today.toISOString().split("T")[0];
       const rule=escalateDays[t.priority];
-      if(rule!=null && diff>=rule){
+      if(rule!=null&&diff>=rule){
         const idx=levels.indexOf(t.priority);
         if(idx<levels.length-1)t.priority=levels[idx+1];
       }
