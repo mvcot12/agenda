@@ -5,7 +5,49 @@
 <title>Agenda mensual · Mateo</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
+<script>
+/* ------------- CONFIG ------------- */
+const TOKEN = `sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY`;
+const FILE_PATH = '/tasks.json';
+/* ------------- DATA ------------- */
+let tasks = [];
+const levels=["Neutra","Baja","Media","Alta","Urgente"];
+/* ------------- HELPERS ------------- */
+const api = async (endpoint, body)=>fetch('https://api.dropboxapi.com/2/'+endpoint,{
+  method:'POST',
+  headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},
+  body:JSON.stringify(body)
+}).then(r=>r.json());
+
+const download = async ()=>{
+  const {url} = await api('files/get_temporary_link',{path:FILE_PATH});
+  if(!url) return [];
+  const txt = await fetch(url).then(r=>r.text()).catch(()=>null);
+  return txt ? JSON.parse(txt) : [];
+};
+
+const upload = async (content)=>{
+  await fetch('https://content.dropboxapi.com/2/files/upload',{
+    method:'POST',
+    headers:{
+      'Authorization':'Bearer '+TOKEN,
+      'Dropbox-API-Arg':JSON.stringify({path:FILE_PATH,mode:'overwrite'}),
+      'Content-Type':'application/octet-stream'
+    },
+    body:content
+  });
+};
+/* ------------- INIT ------------- */
+(async()=>{
+  // ... (pon aquí todo tu código de UI, pero sustituye load()/save())
+  tasks = await download();
+  // renderAll(), eventos, etc.
+})();
+/* Y siempre que necesites guardar: */
+await upload(JSON.stringify(tasks));
+tasks = await download(); // para que el otro dispositivo vea lo mismo después de F5
+</script>
+
 
 <style>
 :root{
