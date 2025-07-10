@@ -6,6 +6,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- SDK de Dropbox -->
+<script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
+
 <style>
 :root{
   --accent:#2ecc71;
@@ -27,38 +31,27 @@ body{
 }
 h1{font-size:1.7rem;font-weight:600;margin-bottom:1.2rem;text-align:center}
 .container{width:100%;max-width:900px}
-#calHeader{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:.8rem;
-}
-.navBtn{
-  background:none;border:none;font-size:1.4rem;cursor:pointer;
-  padding:.1rem .6rem;color:var(--accent);font-weight:600;
-}
+#calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.navBtn{background:none;border:none;font-size:1.4rem;cursor:pointer;padding:.1rem .6rem;color:var(--accent);font-weight:600}
 #monthLabel{font-size:1.2rem;font-weight:600}
 table{width:100%;border-collapse:collapse}
 th,td{
-  width:14.285%;height:95px;
-  text-align:left;vertical-align:top;
-  border:1px solid var(--border);
-  background:var(--card);position:relative;
+  width:14.285%;height:95px;text-align:left;vertical-align:top;
+  border:1px solid var(--border);background:var(--card);position:relative
 }
 th{background:var(--bg);height:35px;font-size:.8rem;font-weight:600}
-td span.dayNum{
-  position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600
-}
+td span.dayNum{position:absolute;top:6px;left:6px;font-size:.8rem;font-weight:600}
 .badge{
-  position:absolute;top:4px;right:6px;
-  background:var(--accent);color:#fff;border-radius:50%;font-size:.65rem;
-  width:18px;height:18px;display:flex;align-items:center;justify-content:center
+  position:absolute;top:4px;right:6px;background:var(--accent);color:#fff;
+  border-radius:50%;font-size:.65rem;width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center
 }
 td.today{outline:3px solid var(--accent)}
 #todayHeader{font-size:1.15rem;font-weight:600;margin:.9rem 0 .6rem}
 .task{
-  display:flex;align-items:center;gap:.65rem;
-  background:var(--card);border-left:6px solid var(--neutra);
-  border-radius:8px;padding:.55rem .8rem;margin-bottom:.45rem;
-  box-shadow:0 2px 4px rgba(0,0,0,.04);
+  display:flex;align-items:center;gap:.65rem;background:var(--card);
+  border-left:6px solid var(--neutra);border-radius:8px;
+  padding:.55rem .8rem;margin-bottom:.45rem;box-shadow:0 2px 4px rgba(0,0,0,.04)
 }
 [data-priority="Baja"]{border-color:var(--baja)}
 [data-priority="Media"]{border-color:var(--media)}
@@ -75,9 +68,8 @@ form input,form select{
   border:1px solid var(--border);border-radius:6px;
 }
 button{
-  border:none;background:var(--accent);color:#fff;
-  font-weight:600;padding:.5rem 1.1rem;border-radius:6px;
-  margin-top:.8rem;cursor:pointer
+  border:none;background:var(--accent);color:#fff;font-weight:600;
+  padding:.5rem 1.1rem;border-radius:6px;margin-top:.8rem;cursor:pointer
 }
 button:hover{opacity:.92}
 </style>
@@ -121,30 +113,52 @@ button:hover{opacity:.92}
 </div>
 
 <script>
-const STORAGE_KEY="agendaMateoTasks";
+/* === Config Dropbox (token personal) === */
+const DBX = new Dropbox.Dropbox({
+  accessToken: "sl.u.AF1hgItuRPRXAsNonpBQqGtsbEjWXFvgQtaBemhJTx8CdOHBRluj2fjwgB-qdfBzEG5G5deiZNrRHuU2FVzJb9XFcEMCOMmea3AnyunMxMMiRP2Ky3JGKKb-g0qL8pspaHF7_XgJi6XEqgFZPbI2hQDHiWWOdvRqCbgx5Gfn30aiRi14d8wrxvTGTbxSUqizUfqpE7wFWYMuFiyTmWgFE6DgHOkrwbEaLi7TNWE3xfEl_rG9j5Zq5zMesqdpG7Aam-0ttm2C9zYIAzm2R8wBQ_MqcaUf56QTnMVWgOl5b8CDlCDfXM0OkLFhIfmPhBb5RDI_YXeXy4QM1JSfOI_uh233xpSO93CH6_VOZTD9Twq_Wrci32--0mMF1mTutratcJkFmb_AZXwtnEhOAnPHvKpRgxXVQzDe7l819NvhxBc-PHPfS2WMV9cpVNVc1D6QsEBHG7sIgHw8ybIZWIW464Dg29ET4JwvLCEx4GR1SNxsVdo9fCuUfvwHT5Wyefo0NqE6FusTb3KxwIP0BSKFIa60CdnMYjytGn_JrHsVkirLSrOI0XUim7vWWHCWgsLEKZXaqg4udUSk_JU3gMXrcEi2jrLAjiKS2uzZ5jdap4_sfY30fIqSXAj-RhWoZq466074qOm-mmEUASMUUiVF9IyaHihJscrER174GJDlX-qayXMnnnadMicTNI8BiJ8N0gW8TG8u00byRntB_NFG417Ez9en0Yb3nAvyK2o9jB0hTGQYB8VK-xVn0bDeqKnHQBhD8pWF8f_qfXleh_y5f8-iUPs4RBURWtAKP9FkIq1NZP3KoimSt6ouSq79xJtI3CdLzP7ihQfypstGayGxs0fby2GuUaTtmE4mzvNOIaUtEzDQQAvBARlWVXjb6SxUjFjqWRrBE2zDnSHGpgINczMBtW5JNdkh8Uk5hO75e1v0cSLVQsCSL-l271lncrvqz4mj1PJ99Uc9WfUz_vNmg65kKFlaeOnopWOOPkO7u8NF1IThsRC_fMzzT0a1yVIypPq-Kd2wUiUw9wvrTE3o0NIhKOKiMmQwZv6MhfEMi1KEclvfRadBAb8L4wI2BWtROGFpD5-0Dd2CN1fTKkm6DsZY5OTbKZJj8UV6yomDFfgDbUzd3k9vGX1AWmap6G5zVPzkDYvLoOsps6vtua9BvY6ayTIoAXQb-tU6fFs2gsYKcz3CEtKT5-GTRf4ngSAJbD71-HH-0vHOCqN98fVDa4NkGs8oNNeyoIWs1nE4klsvznuZrNCt7CXnu7RU_G_0LIYQ7Np8vAb2mMfyTx7GYP9Y"
+});
+const DROPBOX_FILE = "/agendaMateo/tasks.json";
+
+/* === Agenda lógica === */
+const STORAGE_KEY="agendaMateoTasks"; // ya no se usa local, pero mantenemos var
 const levels=["Neutra","Baja","Media","Alta","Urgente"];
-const escalateDays={Neutra:4,Baja:3,Media:2,Alta:1};
-let tasks=load()||[];
+const escalateDays={Neutra:4,Baja:3,Media:2,Alta:1}; // días para subir
+let tasks=[]; // se llenará con load()
+
 let viewDate=new Date(); // mes mostrado
 
-const parseYMD=s=>{
-  const [y,m,d]=s.split("-").map(Number);
-  return new Date(y,m-1,d); // local
-};
+const parseYMD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
 const sameDate=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
 
 init();
 
-function init(){
+async function init(){
+  tasks = await load();
   document.getElementById("prev").onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCal();};
   document.getElementById("next").onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCal();};
   document.getElementById("addForm").addEventListener("submit",addTask);
   escalate();
   renderCal();
-  renderList(new Date()); // hoy
+  renderList(new Date());
 }
-function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY));}catch{return []}}
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));}
+
+async function load(){
+  try{
+    const resp = await DBX.filesDownload({ path: DROPBOX_FILE });
+    const txt  = await resp.result.fileBlob.text();
+    return JSON.parse(txt);
+  }catch{
+    return [];
+  }
+}
+async function save(){
+  const content = JSON.stringify(tasks);
+  await DBX.filesUpload({
+    path: DROPBOX_FILE,
+    mode: { ".tag": "overwrite" },
+    contents: content
+  });
+}
 
 function renderCal(){
   const year=viewDate.getFullYear(),month=viewDate.getMonth();
@@ -161,50 +175,38 @@ function renderCal(){
   const startIndex=(firstDay.getDay()+6)%7; // lunes=0
   const daysInMonth=new Date(year,month+1,0).getDate();
   let row=document.createElement("tr");
-  // celdas en blanco inicio
-  for(let i=0;i<startIndex;i++){row.appendChild(document.createElement("td"));}
+  for(let i=0;i<startIndex;i++)row.appendChild(document.createElement("td"));
   for(let d=1;d<=daysInMonth;d++){
     const date=new Date(year,month,d);
     const td=document.createElement("td");
     if(sameDate(date,new Date()))td.classList.add("today");
     td.innerHTML=`<span class="dayNum">${d}</span>`;
     const count=tasks.filter(t=>sameDate(parseYMD(t.date),date)).length;
-    if(count){
-      const badge=document.createElement("div");
-      badge.className="badge";badge.textContent=count;
-      td.appendChild(badge);
-    }
+    if(count){const b=document.createElement("div");b.className="badge";b.textContent=count;td.appendChild(b);}
     td.onclick=()=>renderList(date);
     row.appendChild(td);
     if((startIndex+d)%7===0||d===daysInMonth){
-      // rellenar si última fila incompleta
       while(row.children.length<7)row.appendChild(document.createElement("td"));
-      cal.appendChild(row);
-      row=document.createElement("tr");
+      cal.appendChild(row);row=document.createElement("tr");
     }
   }
 }
 
 function renderList(date){
-  document.getElementById("todayHeader").textContent=
-    date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-  const list=document.getElementById("tasks");
-  list.innerHTML="";
+  document.getElementById("todayHeader").textContent=date.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
+  const list=document.getElementById("tasks");list.innerHTML="";
   const dayTasks=tasks.filter(t=>sameDate(parseYMD(t.date),date));
   if(!dayTasks.length){list.innerHTML='<div class="empty">Sin pendientes.</div>';return;}
   dayTasks.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
   dayTasks.forEach(t=>{
-    const div=document.createElement("div");
-    div.className="task";div.dataset.priority=t.priority;
-    const chk=document.createElement("input");chk.type="checkbox";
-    chk.onchange=()=>complete(t.id,date);
-    const span=document.createElement("span");
-    span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
+    const div=document.createElement("div");div.className="task";div.dataset.priority=t.priority;
+    const chk=document.createElement("input");chk.type="checkbox";chk.onchange=()=>complete(t.id,date);
+    const span=document.createElement("span");span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
     div.append(chk,span);list.appendChild(div);
   });
 }
 
-function addTask(e){
+async function addTask(e){
   e.preventDefault();
   const f=document.getElementById("taskDate").value;
   const h=document.getElementById("taskTime").value;
@@ -212,15 +214,14 @@ function addTask(e){
   const p=document.getElementById("taskPriority").value;
   if(!f||!d)return;
   tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p});
-  save();e.target.reset();
-  escalate();renderCal();
-  renderList(parseYMD(f));
-  e.target.parentElement.open=false;
+  await save();
+  escalate();renderCal();renderList(parseYMD(f));
+  e.target.reset();e.target.parentElement.open=false;
 }
 
-function complete(id,focusDate){
-  tasks=tasks.filter(t=>t.id!==id);save();
-  escalate();renderCal();renderList(focusDate);
+async function complete(id,focusDate){
+  tasks=tasks.filter(t=>t.id!==id);
+  await save();escalate();renderCal();renderList(focusDate);
 }
 
 function escalate(){
@@ -229,15 +230,14 @@ function escalate(){
     const d=parseYMD(t.date);
     if(d<today){
       const diff=Math.floor((today-d)/86400000);
-      t.date=today.toISOString().split("T")[0]; // mover
+      t.date=today.toISOString().split("T")[0];
       const rule=escalateDays[t.priority];
-      if(rule!=null&&diff>=rule){
+      if(rule!=null && diff>=rule){
         const idx=levels.indexOf(t.priority);
         if(idx<levels.length-1)t.priority=levels[idx+1];
       }
     }
   });
-  save();
 }
 </script>
 </body>
