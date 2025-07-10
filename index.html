@@ -1,277 +1,248 @@
-html_code = """
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Agenda diaria y pendientes – Mateo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda diaria de Mateo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-    :root{
-        --verde:#2ecc71;
-        --gris:#ecf0f1;
-        --baja:#95a5a6;
-        --media:#f1c40f;
-        --alta:#e67e22;
-        --urgente:#e74c3c;
-    }
-    body{
-        font-family: Arial, Helvetica, sans-serif;
-        margin:0;
-        background:#fafafa;
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        padding:1rem;
-    }
-    h1{
-        margin-top:0;
-    }
-    #week{
-        display:grid;
-        grid-template-columns: repeat(7,minmax(110px,1fr));
-        gap:4px;
-        width:100%;
-        max-width:800px;
-        margin-bottom:1rem;
-    }
-    .day{
-        background:var(--gris);
-        padding:.5rem;
-        border-radius:6px;
-        text-align:center;
-        position:relative;
-    }
-    .today{
-        background:var(--verde);
-        color:#fff;
-        font-weight:bold;
-        font-size:1.1rem;
-    }
-    .day small{
-        display:block;
-        margin-top:.25rem;
-        font-size:.75rem;
-        font-weight:bold;
-    }
-    #tasks{
-        width:100%;
-        max-width:800px;
-    }
-    .task{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        padding:.5rem .75rem;
-        margin-bottom:4px;
-        border-radius:4px;
-        color:#333;
-        background:#fff;
-        box-shadow:0 1px 2px rgba(0,0,0,.07);
-    }
-    .task[data-priority="Baja"]{border-left:8px solid var(--baja);}
-    .task[data-priority="Media"]{border-left:8px solid var(--media);}
-    .task[data-priority="Alta"]{border-left:8px solid var(--alta);}
-    .task[data-priority="Urgente"]{border-left:8px solid var(--urgente);}
-    .task span{
-        flex:1;
-        padding-left:.5rem;
-    }
-    .hidden{display:none;}
-    #addForm{
-        background:#fff;
-        padding:1rem;
-        border-radius:6px;
-        box-shadow:0 1px 3px rgba(0,0,0,.08);
-        width:100%;
-        max-width:800px;
-        margin-top:1rem;
-    }
-    label{display:block;margin-top:.5rem;}
-    button{
-        cursor:pointer;
-        border:none;
-        background:var(--verde);
-        color:#fff;
-        padding:.5rem 1rem;
-        border-radius:4px;
-        margin-top:.75rem;
-        font-weight:bold;
-    }
-    button:hover{opacity:.9;}
+:root{
+  --accent:#2ecc71;
+  --bg:#fafafa;
+  --card:#ffffff;
+  --border:#e2e2e2;
+  --txt:#333;
+  --baja:#95a5a6;
+  --media:#f1c40f;
+  --alta:#e67e22;
+  --urgente:#e74c3c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:1.5rem;
+}
+h1{font-size:1.6rem;font-weight:600;margin-bottom:1rem}
+.container{width:100%;max-width:880px}
+#week{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:.5rem;
+  margin-bottom:1.5rem;
+}
+.day{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.6rem .4rem;
+  text-align:center;
+  font-size:.85rem;
+  line-height:1.2;
+  position:relative;
+  transition:.2s;
+}
+.day.today{
+  background:var(--accent);
+  color:#fff;
+  font-weight:600;
+}
+.day small{
+  display:block;
+  margin-top:.3rem;
+  font-size:.7rem;
+  opacity:.8;
+}
+#todayHeader{font-size:1.2rem;font-weight:600;margin-bottom:.75rem}
+.task{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  background:var(--card);
+  border-left:6px solid var(--baja);
+  border-radius:8px;
+  padding:.7rem .9rem;
+  margin-bottom:.5rem;
+  box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.task[data-priority="Media"]{border-color:var(--media)}
+.task[data-priority="Alta"]{border-color:var(--alta)}
+.task[data-priority="Urgente"]{border-color:var(--urgente)}
+.task span{flex:1;font-size:.9rem}
+.task input{width:1.1rem;height:1.1rem;cursor:pointer}
+details{margin-top:1.75rem}
+summary{cursor:pointer;font-weight:600;margin-bottom:.8rem}
+form label{display:block;font-size:.85rem;margin:.4rem 0}
+form input,form select{
+  width:100%;padding:.45rem .5rem;font-size:.85rem;
+  border:1px solid var(--border);border-radius:6px;
+}
+button{
+  border:none;background:var(--accent);color:#fff;
+  font-weight:600;padding:.5rem 1.1rem;border-radius:6px;
+  margin-top:.9rem;cursor:pointer
+}
+button:hover{opacity:.92}
+.empty{opacity:.6;font-style:italic;padding:.5rem 0}
 </style>
 </head>
 <body>
-<h1>Agenda diaria y pendientes – Mateo</h1>
+<h1>Agenda diaria · Mateo</h1>
+<div class="container">
+  <div id="week"></div>
+  <h2 id="todayHeader"></h2>
+  <div id="tasks"></div>
 
-<div id="week"></div>
-
-<h2 id="todayHeader"></h2>
-<div id="tasks"></div>
-
-<details id="addAccordion">
+  <details>
     <summary>➕ Añadir pendiente</summary>
     <form id="addForm">
-        <label>Fecha:
-            <input type="date" id="taskDate" required>
-        </label>
-        <label>Hora:
-            <input type="time" id="taskTime">
-        </label>
-        <label>Descripción:
-            <input type="text" id="taskDesc" required>
-        </label>
-        <label>Prioridad:
-            <select id="taskPriority">
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
-            </select>
-        </label>
-        <button type="submit">Guardar</button>
+      <label>Fecha
+        <input type="date" id="taskDate" required>
+      </label>
+      <label>Hora
+        <input type="time" id="taskTime">
+      </label>
+      <label>Descripción
+        <input type="text" id="taskDesc" required placeholder="Ej. pagar maquilas">
+      </label>
+      <label>Prioridad
+        <select id="taskPriority">
+          <option value="Baja">Baja</option>
+          <option value="Media">Media</option>
+          <option value="Alta">Alta</option>
+        </select>
+      </label>
+      <button type="submit">Guardar</button>
     </form>
-</details>
+  </details>
+</div>
 
 <script>
-const STORAGE_KEY = "agendaMateoTasks";
-const priorityLevels = ["Baja","Media","Alta","Urgente"];
-const escalationRules = {Baja:3, Media:2, Alta:1}; // días de retraso
-let tasks = loadTasks();
+const STORAGE_KEY="agendaMateoTasks";
+const levels=["Baja","Media","Alta","Urgente"];
+const escalateDays={Baja:3,Media:2,Alta:1}; // días p/ subir prioridad
+let tasks=load()||[];
+
+const parseYMD=str=>{
+  const [y,m,d]=str.split("-").map(Number);
+  return new Date(y, m-1, d); // fecha local, sin desfase
+};
+const todayLocal=new Date();
+
 init();
 
 function init(){
-    renderWeek();
-    escalateAndRoll();
-    renderTodayTasks();
-    document.getElementById("addForm").addEventListener("submit",addTask);
+  renderWeek();
+  escalate();
+  renderToday();
+  document.getElementById("addForm").addEventListener("submit",addTask);
 }
 
-function loadTasks(){
-    try{
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    }catch(e){return [];}
+function load(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY));}
+  catch{ return [];}
 }
-function saveTasks(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+function save(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks)); }
+
+function sameDate(a,b){
+  return a.getFullYear()===b.getFullYear() &&
+         a.getMonth()===b.getMonth() &&
+         a.getDate()===b.getDate();
 }
 
 function startOfWeek(date){
-    const d = new Date(date);
-    const day = d.getDay(); // 0 domingo
-    const diff = d.getDate()-day+ (day===0 ? -6:1); // lunes
-    return new Date(d.setDate(diff));
+  const d=new Date(date);
+  const day=d.getDay(); // 0=Dom
+  const diff=d.getDate()-day+(day===0?-6:1); // lunes
+  return new Date(d.setDate(diff));
 }
 
 function renderWeek(){
-    const weekDiv = document.getElementById("week");
-    weekDiv.innerHTML = "";
-    const today = new Date();
-    const start = startOfWeek(today);
-    for(let i=0;i<7;i++){
-        const day = new Date(start);
-        day.setDate(start.getDate()+i);
-        const div = document.createElement("div");
-        div.className="day"+(isSameDate(day,today)? " today":"");
-        div.textContent = day.toLocaleDateString("es-EC",{weekday:"short", day:"numeric", month:"short"});
-        const count = tasks.filter(t=> isSameDate(new Date(t.date), day)).length;
-        if(count){
-            const badge = document.createElement("small");
-            badge.textContent = count+" tarea"+(count>1?"s":"");
-            div.appendChild(badge);
-        }
-        weekDiv.appendChild(div);
+  const wrap=document.getElementById("week");
+  wrap.innerHTML="";
+  const start=startOfWeek(todayLocal);
+  for(let i=0;i<7;i++){
+    const day=new Date(start);
+    day.setDate(start.getDate()+i);
+    const div=document.createElement("div");
+    div.className="day"+(sameDate(day,todayLocal)?" today":"");
+    div.textContent=day.toLocaleDateString("es-EC",{weekday:"short",day:"numeric",month:"short"});
+    const count=tasks.filter(t=>sameDate(parseYMD(t.date),day)).length;
+    if(count){
+      const badge=document.createElement("small");
+      badge.textContent=count+" tarea"+(count>1?"s":"");
+      div.appendChild(badge);
     }
+    wrap.appendChild(div);
+  }
 }
 
-function isSameDate(a,b){
-    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-}
-
-function renderTodayTasks(){
-    const today = new Date();
-    document.getElementById("todayHeader").textContent = today.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
-    const list = document.getElementById("tasks");
-    list.innerHTML="";
-    const todayTasks = tasks.filter(t=> isSameDate(new Date(t.date), today));
-    if(!todayTasks.length){
-        list.textContent = "🎉 Nada pendiente hoy (¿en serio?).";
-        return;
-    }
-    todayTasks.sort((a,b)=> priorityLevels.indexOf(b.priority)-priorityLevels.indexOf(a.priority));
-    todayTasks.forEach(task=>{
-        const div=document.createElement("div");
-        div.className="task";
-        div.dataset.id=task.id;
-        div.dataset.priority=task.priority;
-        const chk=document.createElement("input");
-        chk.type="checkbox";
-        chk.addEventListener("change",e=>{
-            if(e.target.checked){
-                completeTask(task.id);
-            }
-        });
-        const span=document.createElement("span");
-        span.textContent=`[${task.priority}] ${task.time?task.time+" - ":""}${task.desc}`;
-        div.appendChild(chk);
-        div.appendChild(span);
-        list.appendChild(div);
-    });
+function renderToday(){
+  document.getElementById("todayHeader").textContent=
+    todayLocal.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
+  const list=document.getElementById("tasks");
+  list.innerHTML="";
+  const todayTasks=tasks.filter(t=>sameDate(parseYMD(t.date),todayLocal));
+  if(!todayTasks.length){
+    list.innerHTML='<div class="empty">🎉 Sin pendientes hoy.</div>';
+    return;
+  }
+  todayTasks.sort((a,b)=>levels.indexOf(b.priority)-levels.indexOf(a.priority));
+  todayTasks.forEach(t=>{
+    const div=document.createElement("div");
+    div.className="task"; div.dataset.priority=t.priority;
+    const chk=document.createElement("input");
+    chk.type="checkbox";
+    chk.addEventListener("change",()=>complete(t.id));
+    const span=document.createElement("span");
+    span.textContent=`[${t.priority}] ${t.time?t.time+" – ":""}${t.desc}`;
+    div.append(chk,span);
+    list.appendChild(div);
+  });
 }
 
 function addTask(e){
-    e.preventDefault();
-    const date=document.getElementById("taskDate").value;
-    const time=document.getElementById("taskTime").value;
-    const desc=document.getElementById("taskDesc").value.trim();
-    const priority=document.getElementById("taskPriority").value;
-    if(!date||!desc)return;
-    tasks.push({
-        id:Date.now(),
-        date,
-        time,
-        desc,
-        priority,
-        done:false
-    });
-    saveTasks();
-    e.target.reset();
-    renderWeek();
-    renderTodayTasks();
-    document.getElementById("addAccordion").open=false;
+  e.preventDefault();
+  const f=document.getElementById("taskDate").value;
+  const h=document.getElementById("taskTime").value;
+  const d=document.getElementById("taskDesc").value.trim();
+  const p=document.getElementById("taskPriority").value;
+  if(!f||!d)return;
+  tasks.push({id:Date.now(),date:f,time:h,desc:d,priority:p});
+  save();
+  e.target.reset();
+  renderWeek();
+  renderToday();
+  e.target.parentElement.open=false;
 }
 
-function completeTask(id){
-    tasks = tasks.filter(t=>t.id!==id);
-    saveTasks();
-    renderWeek();
-    renderTodayTasks();
+function complete(id){
+  tasks=tasks.filter(t=>t.id!==id);
+  save();
+  renderWeek();
+  renderToday();
 }
 
-function escalateAndRoll(){
-    const today = new Date();
-    tasks.forEach(task=>{
-        if(task.done)return;
-        const taskDate=new Date(task.date);
-        if(taskDate<today){
-            // Mover al día actual
-            task.date=today.toISOString().split("T")[0];
-            // Calcular retraso en días
-            const diff=Math.floor((today-taskDate)/86400000);
-            const rule=escalationRules[task.priority];
-            if(rule!==undefined && diff>=rule){
-                const idx=priorityLevels.indexOf(task.priority);
-                if(idx<priorityLevels.length-1){
-                    task.priority=priorityLevels[idx+1];
-                }
-            }
-        }
-    });
-    saveTasks();
+function escalate(){
+  tasks.forEach(t=>{
+    const tDate=parseYMD(t.date);
+    if(tDate<todayLocal){
+      const diff=Math.floor((todayLocal - tDate)/86400000);
+      t.date=todayLocal.toISOString().split("T")[0]; // mover a hoy
+      const rule=escalateDays[t.priority];
+      if(rule!=null && diff>=rule){
+        const idx=levels.indexOf(t.priority);
+        if(idx<levels.length-1) t.priority=levels[idx+1];
+      }
+    }
+  });
+  save();
 }
 </script>
 </body>
 </html>
-"""
-
-with open('/mnt/data/agenda_mateo.html', 'w', encoding='utf-8') as f:
-    f.write(html_code)
-
