@@ -1,0 +1,277 @@
+html_code = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agenda diaria y pendientes – Mateo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    :root{
+        --verde:#2ecc71;
+        --gris:#ecf0f1;
+        --baja:#95a5a6;
+        --media:#f1c40f;
+        --alta:#e67e22;
+        --urgente:#e74c3c;
+    }
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+        margin:0;
+        background:#fafafa;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        padding:1rem;
+    }
+    h1{
+        margin-top:0;
+    }
+    #week{
+        display:grid;
+        grid-template-columns: repeat(7,minmax(110px,1fr));
+        gap:4px;
+        width:100%;
+        max-width:800px;
+        margin-bottom:1rem;
+    }
+    .day{
+        background:var(--gris);
+        padding:.5rem;
+        border-radius:6px;
+        text-align:center;
+        position:relative;
+    }
+    .today{
+        background:var(--verde);
+        color:#fff;
+        font-weight:bold;
+        font-size:1.1rem;
+    }
+    .day small{
+        display:block;
+        margin-top:.25rem;
+        font-size:.75rem;
+        font-weight:bold;
+    }
+    #tasks{
+        width:100%;
+        max-width:800px;
+    }
+    .task{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:.5rem .75rem;
+        margin-bottom:4px;
+        border-radius:4px;
+        color:#333;
+        background:#fff;
+        box-shadow:0 1px 2px rgba(0,0,0,.07);
+    }
+    .task[data-priority="Baja"]{border-left:8px solid var(--baja);}
+    .task[data-priority="Media"]{border-left:8px solid var(--media);}
+    .task[data-priority="Alta"]{border-left:8px solid var(--alta);}
+    .task[data-priority="Urgente"]{border-left:8px solid var(--urgente);}
+    .task span{
+        flex:1;
+        padding-left:.5rem;
+    }
+    .hidden{display:none;}
+    #addForm{
+        background:#fff;
+        padding:1rem;
+        border-radius:6px;
+        box-shadow:0 1px 3px rgba(0,0,0,.08);
+        width:100%;
+        max-width:800px;
+        margin-top:1rem;
+    }
+    label{display:block;margin-top:.5rem;}
+    button{
+        cursor:pointer;
+        border:none;
+        background:var(--verde);
+        color:#fff;
+        padding:.5rem 1rem;
+        border-radius:4px;
+        margin-top:.75rem;
+        font-weight:bold;
+    }
+    button:hover{opacity:.9;}
+</style>
+</head>
+<body>
+<h1>Agenda diaria y pendientes – Mateo</h1>
+
+<div id="week"></div>
+
+<h2 id="todayHeader"></h2>
+<div id="tasks"></div>
+
+<details id="addAccordion">
+    <summary>➕ Añadir pendiente</summary>
+    <form id="addForm">
+        <label>Fecha:
+            <input type="date" id="taskDate" required>
+        </label>
+        <label>Hora:
+            <input type="time" id="taskTime">
+        </label>
+        <label>Descripción:
+            <input type="text" id="taskDesc" required>
+        </label>
+        <label>Prioridad:
+            <select id="taskPriority">
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+            </select>
+        </label>
+        <button type="submit">Guardar</button>
+    </form>
+</details>
+
+<script>
+const STORAGE_KEY = "agendaMateoTasks";
+const priorityLevels = ["Baja","Media","Alta","Urgente"];
+const escalationRules = {Baja:3, Media:2, Alta:1}; // días de retraso
+let tasks = loadTasks();
+init();
+
+function init(){
+    renderWeek();
+    escalateAndRoll();
+    renderTodayTasks();
+    document.getElementById("addForm").addEventListener("submit",addTask);
+}
+
+function loadTasks(){
+    try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    }catch(e){return [];}
+}
+function saveTasks(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function startOfWeek(date){
+    const d = new Date(date);
+    const day = d.getDay(); // 0 domingo
+    const diff = d.getDate()-day+ (day===0 ? -6:1); // lunes
+    return new Date(d.setDate(diff));
+}
+
+function renderWeek(){
+    const weekDiv = document.getElementById("week");
+    weekDiv.innerHTML = "";
+    const today = new Date();
+    const start = startOfWeek(today);
+    for(let i=0;i<7;i++){
+        const day = new Date(start);
+        day.setDate(start.getDate()+i);
+        const div = document.createElement("div");
+        div.className="day"+(isSameDate(day,today)? " today":"");
+        div.textContent = day.toLocaleDateString("es-EC",{weekday:"short", day:"numeric", month:"short"});
+        const count = tasks.filter(t=> isSameDate(new Date(t.date), day)).length;
+        if(count){
+            const badge = document.createElement("small");
+            badge.textContent = count+" tarea"+(count>1?"s":"");
+            div.appendChild(badge);
+        }
+        weekDiv.appendChild(div);
+    }
+}
+
+function isSameDate(a,b){
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+
+function renderTodayTasks(){
+    const today = new Date();
+    document.getElementById("todayHeader").textContent = today.toLocaleDateString("es-EC",{weekday:"long",day:"numeric",month:"long"});
+    const list = document.getElementById("tasks");
+    list.innerHTML="";
+    const todayTasks = tasks.filter(t=> isSameDate(new Date(t.date), today));
+    if(!todayTasks.length){
+        list.textContent = "🎉 Nada pendiente hoy (¿en serio?).";
+        return;
+    }
+    todayTasks.sort((a,b)=> priorityLevels.indexOf(b.priority)-priorityLevels.indexOf(a.priority));
+    todayTasks.forEach(task=>{
+        const div=document.createElement("div");
+        div.className="task";
+        div.dataset.id=task.id;
+        div.dataset.priority=task.priority;
+        const chk=document.createElement("input");
+        chk.type="checkbox";
+        chk.addEventListener("change",e=>{
+            if(e.target.checked){
+                completeTask(task.id);
+            }
+        });
+        const span=document.createElement("span");
+        span.textContent=`[${task.priority}] ${task.time?task.time+" - ":""}${task.desc}`;
+        div.appendChild(chk);
+        div.appendChild(span);
+        list.appendChild(div);
+    });
+}
+
+function addTask(e){
+    e.preventDefault();
+    const date=document.getElementById("taskDate").value;
+    const time=document.getElementById("taskTime").value;
+    const desc=document.getElementById("taskDesc").value.trim();
+    const priority=document.getElementById("taskPriority").value;
+    if(!date||!desc)return;
+    tasks.push({
+        id:Date.now(),
+        date,
+        time,
+        desc,
+        priority,
+        done:false
+    });
+    saveTasks();
+    e.target.reset();
+    renderWeek();
+    renderTodayTasks();
+    document.getElementById("addAccordion").open=false;
+}
+
+function completeTask(id){
+    tasks = tasks.filter(t=>t.id!==id);
+    saveTasks();
+    renderWeek();
+    renderTodayTasks();
+}
+
+function escalateAndRoll(){
+    const today = new Date();
+    tasks.forEach(task=>{
+        if(task.done)return;
+        const taskDate=new Date(task.date);
+        if(taskDate<today){
+            // Mover al día actual
+            task.date=today.toISOString().split("T")[0];
+            // Calcular retraso en días
+            const diff=Math.floor((today-taskDate)/86400000);
+            const rule=escalationRules[task.priority];
+            if(rule!==undefined && diff>=rule){
+                const idx=priorityLevels.indexOf(task.priority);
+                if(idx<priorityLevels.length-1){
+                    task.priority=priorityLevels[idx+1];
+                }
+            }
+        }
+    });
+    saveTasks();
+}
+</script>
+</body>
+</html>
+"""
+
+with open('/mnt/data/agenda_mateo.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
